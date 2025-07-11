@@ -1,5 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import HelloWorld from './components/HelloWorld.vue'
+import { client } from './lib/api';
+
+onMounted(async () => {
+  const { data, error } = await client.GET("/v1/logs");
+  if (error) {
+    // TODO: show toast or something
+    console.error(error);
+  } else {
+    console.log(data);
+  }
+})
 </script>
 
 <template>
