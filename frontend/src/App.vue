@@ -1,42 +1,28 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, reactive } from 'vue';
 import { client } from './lib/api';
+
+const state = reactive({ logs: ([] as string[]) });
 
 onMounted(async () => {
   const { data, error } = await client.GET("/v1/logs");
-  if (error) {
+  if (data && data.lines) {
+    state.logs = data.lines;
+  } else {
     // TODO: show toast or something
     console.error(error);
-  } else {
-    console.log(data);
   }
 })
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
+  <div class="h-screen w-screen flex place-content-center flex-wrap flex-col gap-16 dark:text-white dark:bg-black">
+    <h1 class="font-mono text-5xl font-black text-center">LOGS</h1>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+    <div class="h-1/2 w-3/4 overflow-scroll flex flex-col border-2 dark:border-white p-2">
+      <span class="font-mono whitespace-pre text-sm" v-for="line in state.logs">
+        {{ line }}
+      </span>
+    </div>
+  </div>
+</template>
