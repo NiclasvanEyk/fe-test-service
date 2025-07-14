@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { useLogs, useLogSearch } from "./lib/logs";
 import LogLine from "./components/LogLine.vue";
 
-const { logs: rawLogs, hasError, loadLogs } = useLogs();
+const { logs: rawLogs, hasError, loadLogs, isLoading } = useLogs();
 const fuzzy = ref(false);
 const toggleFuzzySearch = () => (fuzzy.value = !fuzzy.value);
 
@@ -29,7 +29,8 @@ const logs = computed(() => (isSearching.value ? matchingLogs : rawLogs));
           class="p-2 dark:border-white w-full"
           type="text"
           role="searchbox"
-          placeholder="Search"
+          :placeholder="isLoading ? 'Loading' : 'Search'"
+          :disabled="isLoading"
           id="logs-search-input"
           v-model="query"
         />
@@ -37,9 +38,9 @@ const logs = computed(() => (isSearching.value ? matchingLogs : rawLogs));
         <div
           class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-row items-center gap-2"
         >
-          <span class="opacity-50"
-            >{{ logs.value.length }} / {{ rawLogs.length }}</span
-          >
+          <span class="opacity-50" v-if="!loading">
+            {{ logs.value.length }} / {{ rawLogs.length }}
+          </span>
 
           <!-- Note: This icon would probably need a proper tooltip -->
           <label

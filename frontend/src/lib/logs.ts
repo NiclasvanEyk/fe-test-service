@@ -21,6 +21,10 @@ export function useLogs() {
   const hasError = ref(false);
   const isLoading = ref(false);
 
+  // Note: since the API supports offset & limit, we could probably do some
+  // optimizations to e.g. load the first 100 lines (which should be very fast)
+  // and then load everything else afterwards. Then the user sees results more
+  // quickly.
   async function loadLogs() {
     isLoading.value = true;
     hasError.value = false;
