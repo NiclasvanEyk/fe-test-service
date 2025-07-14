@@ -73,11 +73,22 @@ export function useLogSearch(logs: Ref<LogLine[]>, fuzzy: Ref<boolean>) {
       });
     }
 
-    return results.map((result) => ({
-      text: result.item.text,
-      index: result.refIndex,
-      matches: result.matches,
-    }));
+    return results.map((result) => {
+      const matches = result.matches;
+      if (!fuzzy.value) {
+        matches?.forEach((match) => {
+          match.indices = match.indices.filter(
+            ([begin, end]) => end - begin === query.value.length - 1
+          );
+        });
+      }
+
+      return {
+        text: result.item.text,
+        index: result.refIndex,
+        matches,
+      };
+    });
   });
 
   return { query, fuse, isSearching, matches };
